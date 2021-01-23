@@ -476,8 +476,8 @@ def create_artist_submission():
   deassociatedDict = {}
   try:
       req = request.form
-      artist = Artist(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-                   phone=req['phone'], facebook_link=req['facebook_link'])
+      artist = Artist(name=req['name'], city=req['city'], state=req['state'], phone=req['phone'], 
+                      facebook_link=req['facebook_link'])
       artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
       deassociatedDict = { 'name': artist.name}
       db.session.add(artist)
