@@ -255,10 +255,10 @@ def create_venue_submission():
   error = False
   try:
       req = request.form
-      print(req.getlist('genres'))
+      print(req['name'])
       venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-                   phone=req['phone'], facebookLink=req['facebook_link'], genres=[Genre.query.filter_by(name.in_(req.getlist('genres'))).all()])
-      
+                   phone=req['phone'], facebook_link=req['facebook_link'])
+      venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
       db.session.add(venue)
       db.session.commit()
   except:
