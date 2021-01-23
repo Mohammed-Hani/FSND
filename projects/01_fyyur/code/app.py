@@ -77,9 +77,11 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    web_link = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String())
     genres = db.relationship('Genre', secondary=artists_genres,
       backref=db.backref('artists', lazy=True))
 
@@ -256,11 +258,10 @@ def create_venue_submission():
   deassociatedDict = {}
   try:
       req = request.form
-      print(req['name'])
       venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
                    phone=req['phone'], facebook_link=req['facebook_link'])
       venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
-      deassociatedDict = { name: venue.name}
+      deassociatedDict = { 'name': venue.name}
       db.session.add(venue)
       db.session.commit()
   except:
@@ -471,13 +472,32 @@ def create_artist_submission():
   # called upon submitting the new artist listing form
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
-
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred.  Artist ' + data.name + ' could not be
-  # listed.')
-  return render_template('pages/home.html')
+  error = False
+  deassociatedDict = {}
+  try:
+      req = request.form
+      artist = Artist(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
+                   phone=req['phone'], facebook_link=req['facebook_link'])
+      artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
+      deassociatedDict = { 'name': artist.name}
+      db.session.add(artist)
+      db.session.commit()
+  except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+  finally:
+      db.session.close()
+      if error == True:
+          flash('Artist ' + deassociatedDict['name'] + ' could not be listed!', 'error')
+          abort(500)
+      else:
+          # on successful db insert, flash success
+          flash('Artist ' + deassociatedDict['name'] + ' was successfully listed!')
+          # TODO: on unsuccessful db insert, flash an error instead.
+          # e.g., flash('An error occurred.  Artist ' + data.name + ' could not be
+          # listed.')
+          return render_template('pages/home.html')
 
 
 #  Shows
