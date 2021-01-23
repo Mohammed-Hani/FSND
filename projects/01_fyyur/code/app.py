@@ -30,7 +30,7 @@ class Genre(db.Model):
     __tablename__ = 'genres'
 
     name = db.Column(db.String(60), primary_key=True)
-    
+
 class Show(db.Model):
     __tablename__ = 'shows'
 
@@ -40,6 +40,16 @@ class Show(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     artist = db.relationship("Artist", backref="parents")
     venue = db.relationship("Venue", backref="children")
+
+venues_genres = db.Table('venues_genres',
+    db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
+    db.Column('genre_name', db.String(60), db.ForeignKey('genres.name'), primary_key=True)
+)
+
+artists_genres = db.Table('artists_genres',
+    db.Column('artist_id', db.Integer, db.ForeignKey('artists.id'), primary_key=True),
+    db.Column('genre_name', db.String(60), db.ForeignKey('genres.name'), primary_key=True)
+)
 
 class Venue(db.Model):
     __tablename__ = 'venues'
@@ -55,7 +65,8 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String())
-    genres = db.relationship('Genre', backref='venues', lazy=True) 
+    genres = db.relationship('Genre', secondary=venues_genres,
+      backref=db.backref('venues', lazy=True))
 
     # implement any missing fields, as a database migration using Flask-Migrate
 class Artist(db.Model):
@@ -69,7 +80,9 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    genres = db.relationship('Genre', backref='artists', lazy=True)
+    genres = db.relationship('Genre', secondary=artists_genres,
+      backref=db.backref('artists', lazy=True))
+
 
     # implement any missing fields, as a database migration using Flask-Migrate
 
@@ -244,7 +257,7 @@ def create_venue_submission():
       req = request.form
       print(req.getlist('genres'))
       venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-                   phone=req['phone'], facebookLink=req['facebook_link'], genres=[req.getlist('genres')])
+                   phone=req['phone'], facebookLink=req['facebook_link'], genres=[Genre.query.filter_by(name.in_(req.getlist('genres'))).all()])
       
       db.session.add(venue)
       db.session.commit()
