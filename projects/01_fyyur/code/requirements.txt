@@ -2,3 +2,8 @@ babel
 python-dateutil==2.6.0
 flask-moment
 flask-wtf
+flask
+flask-sqlalchemy
+flask-migrate
+fabric<=2.0, != 2.0
+WTForms
