@@ -10,23 +10,12 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
-
+from forms import *
 from flask_migrate import Migrate
 import sys
-from models import db
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-#db = SQLAlchemy(app)
-db.init_app(app)
-migrate = Migrate(app, db)
-from forms import *
-# connect to a local postgresql database
+from appFactory import create_app
 
-
+app = create_app()
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
