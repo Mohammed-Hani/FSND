@@ -69,7 +69,10 @@ with app.app_context():
                 ('WV', 'WV'),
                 ('WI', 'WI'),
                 ('WY', 'WY'),])
-        genres_choices = [(genre.name, genre.name) for genre in Genre.query.all()]
+        try:
+            genres_choices = [(genre.name, genre.name) for genre in Genre.query.all()]
+        except:
+            genres_choices = []
         address = StringField('address', validators=[DataRequired()])
         phone = StringField('phone')
         image_link = StringField('image_link')
@@ -81,7 +84,10 @@ with app.app_context():
     class ArtistForm(Form):
         name = StringField('name', validators=[DataRequired()])
         city = StringField('city', validators=[DataRequired()])
-        genres_choices = [(genre.name, genre.name) for genre in Genre.query.all()]
+        try:
+            genres_choices = [(genre.name, genre.name) for genre in Genre.query.all()]
+        except:
+            genres_choices = []
         state = SelectField('state', validators=[DataRequired()],
             choices=[('AL', 'AL'),
                 ('AK', 'AK'),
