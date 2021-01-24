@@ -14,8 +14,10 @@ from forms import *
 from flask_migrate import Migrate
 import sys
 from appFactory import create_app
+from models import *
 
 app = create_app()
+
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#

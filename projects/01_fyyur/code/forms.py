@@ -3,10 +3,11 @@ from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL
 from appFactory import create_app
+from models import Genre
 
 app = create_app()
 with app.app_context():
-    from models import Genre
+    
     class ShowForm(Form):
         artist_id = StringField('artist_id')
         venue_id = StringField('venue_id')
