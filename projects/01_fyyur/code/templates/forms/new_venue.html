@@ -45,7 +45,7 @@
               {{ form.image_link(class_ = 'form-control', placeholder='http://', id='image_link', autofocus = true) }}
           </div>
           <div class="checkbox">
-              <label for="seeking_talent">{{ form.seeking_talent(id='seeking_talent', autofocus = true) }}Seeking Talent?</label>
+              <label for="seeking_talent">{{ form.seeking_talent(id='seeking_talent', autofocus = true, onchange='toggleSeekDescript(event)') }}Seeking Talent?</label>
           </div>
           <div class="form-group hidden">
               <label for="seeking_description">Seeking description</label>
@@ -54,14 +54,4 @@
           <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
       </form>
   </div>
-<script>
-    let seeking_talent = document.getElementById('seeking_talent');
-    let seeking_description = document.getElementById('seeking_description').parentNode;
-    seeking_talent.addEventListener('change', (ev) => {
-        if (ev.target.checked)
-            seeking_description.classList.remove('hidden');
-        else
-            seeking_description.classList.add('hidden');
-    })
-</script>
 {% endblock %}

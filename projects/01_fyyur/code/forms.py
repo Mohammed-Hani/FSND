@@ -146,11 +146,14 @@ with app.app_context():
                 ('WY', 'WY'),])
         phone = StringField(# implement validation logic for state
             'phone')
+        web_link = StringField('web_link', validators=[URL()])
         image_link = StringField('image_link')
         genres = SelectMultipleField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField(# implement enum restriction
             'facebook_link', validators=[URL()])
+        seeking_venue = BooleanField('seeking_venue')
+        seeking_description = StringField('seeking_description')
 
     # IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
