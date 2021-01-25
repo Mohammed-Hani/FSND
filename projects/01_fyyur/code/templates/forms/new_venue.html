@@ -2,41 +2,66 @@
 {% block title %}New Venue{% endblock %}
 {% block content %}
   <div class="form-wrapper">
-    <form method="post" class="form">
-      <h3 class="form-heading">List a new venue <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
-      <div class="form-group">
-        <label for="name">Name</label>
-        {{ form.name(class_ = 'form-control', autofocus = true) }}
-      </div>
-      <div class="form-group">
-          <label>City & State</label>
-          <div class="form-inline">
-            <div class="form-group">
-              {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true) }}
-            </div>
-            <div class="form-group">
-              {{ form.state(class_ = 'form-control', placeholder='State', autofocus = true) }}
-            </div>
+      <form method="post" class="form">
+          <h3 class="form-heading">List a new venue <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
+          <div class="form-group">
+              <label for="name">Name</label>
+              {{ form.name(class_ = 'form-control', autofocus = true) }}
           </div>
-      </div>
-      <div class="form-group">
-        <label for="address">Address</label>
-        {{ form.address(class_ = 'form-control', autofocus = true) }}
-      </div>
-      <div class="form-group">
-          <label for="phone">Phone</label>
-          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
-        </div>
-      <div class="form-group">
-        <label for="genres">Genres</label>
-        <small>Ctrl+Click to select multiple</small>
-        {{ form.genres(class_ = 'form-control', placeholder='Genres, separated by commas', id='genres', autofocus = true) }}
-      </div>
-      <div class="form-group">
-          <label for="genres">Facebook Link</label>
-          {{ form.facebook_link(class_ = 'form-control', placeholder='http://', id='fbLink', autofocus = true) }}
-        </div>
-      <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
-    </form>
+          <div class="form-group">
+              <label>City & State</label>
+              <div class="form-inline">
+                  <div class="form-group">
+                      {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true) }}
+                  </div>
+                  <div class="form-group">
+                      {{ form.state(class_ = 'form-control', placeholder='State', autofocus = true) }}
+                  </div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label for="address">Address</label>
+              {{ form.address(class_ = 'form-control', autofocus = true) }}
+          </div>
+          <div class="form-group">
+              <label for="phone">Phone</label>
+              {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+          </div>
+          <div class="form-group">
+              <label for="genres">Genres</label>
+              <small>Ctrl+Click to select multiple</small>
+              {{ form.genres(class_ = 'form-control', placeholder='Genres, separated by commas', id='genres', autofocus = true) }}
+          </div>
+          <div class="form-group">
+              <label for="web_link">Website Link</label>
+              {{ form.web_link(class_ = 'form-control', placeholder='http://', id='web_link', autofocus = true) }}
+          </div>
+          <div class="form-group">
+              <label for="fbLink">Facebook Link</label>
+              {{ form.facebook_link(class_ = 'form-control', placeholder='http://', id='fbLink', autofocus = true) }}
+          </div>
+          <div class="form-group">
+              <label for="image_link">Image Link</label>
+              {{ form.image_link(class_ = 'form-control', placeholder='http://', id='image_link', autofocus = true) }}
+          </div>
+          <div class="checkbox">
+              <label for="seeking_talent">{{ form.seeking_talent(id='seeking_talent', autofocus = true) }}Seeking Talent?</label>
+          </div>
+          <div class="form-group hidden">
+              <label for="seeking_description">Seeking description</label>
+              {{ form.seeking_description(class_ = 'form-control', placeholder='Enter the seeking talent notes', id='seeking_description', autofocus = true) }}
+          </div>
+          <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
+      </form>
   </div>
+<script>
+    let seeking_talent = document.getElementById('seeking_talent');
+    let seeking_description = document.getElementById('seeking_description').parentNode;
+    seeking_talent.addEventListener('change', (ev) => {
+        if (ev.target.checked)
+            seeking_description.classList.remove('hidden');
+        else
+            seeking_description.classList.add('hidden');
+    })
+</script>
 {% endblock %}

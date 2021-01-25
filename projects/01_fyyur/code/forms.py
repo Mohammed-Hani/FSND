@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_wtf import Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
+from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, AnyOf, URL
 from appFactory import create_app
 from models import Genre
@@ -76,8 +76,11 @@ with app.app_context():
             genres_choices = []
         address = StringField('address', validators=[DataRequired()])
         phone = StringField('phone')
-        image_link = StringField('image_link')
-        genres = SelectMultipleField(# TODO implement enum restriction
+        seeking_talent = BooleanField('seeking_talent')
+        seeking_description = StringField('seeking_description')
+        web_link = StringField('web_link', validators=[URL()])
+        image_link = StringField('image_link', validators=[URL()])
+        genres = SelectMultipleField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField('facebook_link', validators=[URL()])
@@ -141,13 +144,13 @@ with app.app_context():
                 ('WV', 'WV'),
                 ('WI', 'WI'),
                 ('WY', 'WY'),])
-        phone = StringField(# TODO implement validation logic for state
+        phone = StringField(# implement validation logic for state
             'phone')
         image_link = StringField('image_link')
-        genres = SelectMultipleField(# TODO implement enum restriction
+        genres = SelectMultipleField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
-        facebook_link = StringField(# TODO implement enum restriction
+        facebook_link = StringField(# implement enum restriction
             'facebook_link', validators=[URL()])
 
-    # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
+    # IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
