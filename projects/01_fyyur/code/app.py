@@ -84,11 +84,7 @@ def search_venues():
   # Music & Coffee"
   search_trm = request.form.get('search_term', '')
   data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
-  # data = []
-  # for id, name in search_result:
-  #   data.append({
-  #     'id': id,
-  #     'name': name})
+  
   response = {
     "count": len(data),
     "data": data
@@ -299,15 +295,22 @@ def search_artists():
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild
   # Sax Band".
   # search for "band" should return "The Wild Sax Band".
+  search_trm = request.form.get('search_term', '')
+  data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
+  
   response = {
-    "count": 1,
-    "data": [{
-      "id": 4,
-      "name": "Guns N Petals",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(data),
+    "data": data
   }
-  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+  # response = {
+  #   "count": 1,
+  #   "data": [{
+  #     "id": 4,
+  #     "name": "Guns N Petals",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }
+  return render_template('pages/search_artists.html', results=response, search_term=search_trm)
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
