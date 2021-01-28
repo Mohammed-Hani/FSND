@@ -48,9 +48,8 @@ def venues():
   #       venue.
   data = []
   for city, state in db.session.query(Venue.city, Venue.state).distinct().all():
-      city_state = { 'city': city, 'state': state, 'venues':[]}
-      for id, name in db.session.query(Venue.id, Venue.name).filter_by(city = city, state = state):
-          city_state['venues'].append({'id':id, 'name':name})
+      city_state = { 'city': city, 'state': state}
+      city_state['venues'] = db.session.query(Venue.id, Venue.name).filter_by(city = city, state = state).all()
       data.append(city_state)
   # data example:
   #data = [{
@@ -78,20 +77,20 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search.  Ensure it is
+  # implement search on venues with partial string search.  Ensure it is
   # case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live
   # Music & Coffee"
   search_trm = request.form.get('search_term', '')
-  search_result = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
-  data = []
-  for id, name in search_result:
-    data.append({
-      'id': id,
-      'name': name})
+  data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
+  # data = []
+  # for id, name in search_result:
+  #   data.append({
+  #     'id': id,
+  #     'name': name})
   response = {
-    "count": len(search_result),
+    "count": len(data),
     "data": data
   }
   # response = {
@@ -278,17 +277,18 @@ def delete_venue(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
-  data = [{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+  # replace with real data returned from querying the database
+ 
+  # data = [{
+  #   "id": 4,
+  #   "name": "Guns N Petals",
+  # }, {
+  #   "id": 5,
+  #   "name": "Matt Quevedo",
+  # }, {
+  #   "id": 6,
+  #   "name": "The Wild Sax Band",
+  # }]
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
