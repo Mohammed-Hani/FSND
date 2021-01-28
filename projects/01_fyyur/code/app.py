@@ -51,6 +51,7 @@ def venues():
       city_state = { 'city': city, 'state': state}
       city_state['venues'] = db.session.query(Venue.id, Venue.name).filter_by(city = city, state = state).all()
       data.append(city_state)
+  
   # data example:
   #data = [{
   #  "city": "San Francisco",
@@ -116,26 +117,14 @@ def show_venue(venue_id):
   get_shows(past_shows)
   upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
   get_shows(upcoming_shows)
-  data = {
-    "id": vn.id,
-    "name": vn.name,
-    "genres": list(map(lambda genre: genre.name ,vn.genres)),
-    "address": vn.address,
-    "city": vn.city,
-    "state": vn.state,
-    "phone": vn.phone,
-    "website": vn.web_link,
-    "facebook_link": vn.facebook_link,
-    "seeking_talent": vn.seeking_talent,
-    "image_link": vn.image_link,
-    "past_shows": past_shows,
-    "upcoming_shows": upcoming_shows,
-    "past_shows_count": len(past_shows),
-    "upcoming_shows_count": len(upcoming_shows)
-  }
   
-  if vn.seeking_talent:
-    data['seeking_description'] = vn.seeking_description
+  data = vars(vn)
+  data["genres"] = list(map(lambda genre: genre.name ,vn.genres))
+  data["past_shows"] = past_shows
+  data["upcoming_shows"] = upcoming_shows
+  data["past_shows_count"] = len(past_shows)
+  data["upcoming_shows_count"] = len(upcoming_shows)
+  
   # example of data
   # data1 = {
   #   "id": 1,
@@ -290,7 +279,7 @@ def artists():
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  # TODO: implement search on artists with partial string search.  Ensure it is
+  # implement search on artists with partial string search.  Ensure it is
   # case-insensitive.
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild
   # Sax Band".
