@@ -22,7 +22,11 @@ app = create_app()
 # Filters.
 #----------------------------------------------------------------------------#
 def format_datetime(value, format='medium'):
-  date = dateutil.parser.parse(value)
+  if (isinstance(value, datetime)):
+    str_value = value.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+  else:
+    str_value = value
+  date = dateutil.parser.parse(str_value)
   if format == 'full':
       format = "EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
@@ -105,38 +109,56 @@ def search_venues():
   # }
   return render_template('pages/search_venues.html', results=response, search_term=search_trm)
 
-def get_shows_for_venue(shws):
+def get_shows_for_venue_orm(shws):
   return list(map(lambda shw: {
     'artist_id': shw.artist_id,
     'artist_name': shw.artist.name,
     'artist_image_link': shw.artist.image_link,
-    'start_time': shw.start_time.strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+    'start_time': shw.start_time},
     shws))
 
-def get_shows_for_artist(shws):
+def get_shows_for_artist_orm(shws):
   return list(map(lambda shw: {
     'venue_id': shw.venue_id,
     'venue_name': shw.venue.name,
     'venue_image_link': shw.venue.image_link,
-    'start_time': shw.start_time.strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+    'start_time': shw.start_time},
     shws))
+
+def get_shows_sql(sign, model_id, out_model_type, in_model_type):
+  str_stmt = """
+    SELECT shows.{model_type}_id, {model_type}s.name, {model_type}s.image_link, shows.start_time
+    FROM shows JOIN {model_type}s
+    ON shows.{model_type}_id = {model_type}s.id
+    WHERE shows.{cmp_model_type}_id = :cmp_model_id AND shows.start_time {compare_sign} NOW();
+    """
+  shows_stmt = db.text(str_stmt.format(model_type=out_model_type, compare_sign=sign, cmp_model_type=in_model_type))
+  return db.session.execute(shows_stmt, {'cmp_model_id':model_id}).fetchall()
+
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # replace with real venue data from the venues table, using venue_id
+  
+  # using ORM
   vn = Venue.query.get(venue_id)
-  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), vn.shows))
-  past_shows_list = get_shows_for_venue(past_shows)
-  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
-  upcoming_shows_list = get_shows_for_venue(upcoming_shows)
-  #print(upcoming_shows_list[0]['start_time'])
+  # past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), vn.shows))
+  #past_shows_list = get_shows_for_venue_orm(past_shows)
+  # upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
+  # upcoming_shows_list = get_shows_for_venue_orm(upcoming_shows)
+  
+
+  #using SQL statement
+  past_shows_list = get_shows_sql('<', venue_id, 'artist', 'venue')
+  upcoming_shows_list = get_shows_sql('>', venue_id, 'artist', 'venue')
+
   data = vars(vn)
   data["genres"] = list(map(lambda genre: genre.name ,vn.genres))
   data["past_shows"] = past_shows_list
   data["upcoming_shows"] = upcoming_shows_list
-  data["past_shows_count"] = len(past_shows)
-  data["upcoming_shows_count"] = len(upcoming_shows)
+  data["past_shows_count"] = len(past_shows_list)
+  data["upcoming_shows_count"] = len(upcoming_shows_list)
   
   # example of data
   # data1 = {
@@ -300,7 +322,7 @@ def search_artists():
   search_trm = request.form.get('search_term', '')
   
   #using ORM
-  data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
+  #data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
   
   #using SQL statement
   data = db.session.execute("SELECT id, name FROM artists WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
@@ -323,18 +345,25 @@ def search_artists():
 def show_artist(artist_id):
   # shows the venue page with the given venue_id
   # replace with real venue data from the venues table, using venue_id
-  artist = Artist.query.get(artist_id)
-  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), artist.shows))
-  past_shows_list = get_shows_for_artist(past_shows)
-  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), artist.shows))
-  upcoming_shows_list = get_shows_for_artist(upcoming_shows)
   
+  # using ORM 
+  artist = Artist.query.get(artist_id)
+  # past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), artist.shows))
+  # past_shows_list = get_shows_for_artist_orm(past_shows)
+  # upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), artist.shows))
+  # upcoming_shows_list = get_shows_for_artist_orm(upcoming_shows)
+  
+  # using SQL
+  past_shows_list = get_shows_sql('<', artist_id, 'venue', 'artist')
+  upcoming_shows_list = get_shows_sql('>', artist_id, 'venue', 'artist')
+
+
   data = vars(artist)
   data["genres"] = list(map(lambda genre: genre.name ,artist.genres))
   data["past_shows"] = past_shows_list
   data["upcoming_shows"] = upcoming_shows_list
-  data["past_shows_count"] = len(past_shows)
-  data["upcoming_shows_count"] = len(upcoming_shows)
+  data["past_shows_count"] = len(past_shows_list)
+  data["upcoming_shows_count"] = len(upcoming_shows_list)
   
   # data1 = {
   #   "id": 4,
