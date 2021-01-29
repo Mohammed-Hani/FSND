@@ -84,7 +84,12 @@ def search_venues():
   # search for "Music" should return "The Musical Hop" and "Park Square Live
   # Music & Coffee"
   search_trm = request.form.get('search_term', '')
-  data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
+  
+  #using ORM
+  #data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
+  
+  #using SQL statement
+  data = db.session.execute("SELECT id, name FROM venues WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
   
   response = {
     "count": len(data),
@@ -293,8 +298,13 @@ def search_artists():
   # Sax Band".
   # search for "band" should return "The Wild Sax Band".
   search_trm = request.form.get('search_term', '')
+  
+  #using ORM
   data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
   
+  #using SQL statement
+  data = db.session.execute("SELECT id, name FROM artists WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
+
   response = {
     "count": len(data),
     "data": data
