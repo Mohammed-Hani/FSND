@@ -90,10 +90,10 @@ def search_venues():
   search_trm = request.form.get('search_term', '')
   
   #using ORM
-  #data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
+  data = db.session.query(Venue.id, Venue.name).filter(Venue.name.ilike('%'+ search_trm +'%')).all()
   
   #using SQL statement
-  data = db.session.execute("SELECT id, name FROM venues WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
+  #data = db.session.execute("SELECT id, name FROM venues WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
   
   response = {
     "count": len(data),
@@ -143,15 +143,15 @@ def show_venue(venue_id):
   
   # using ORM
   vn = Venue.query.get(venue_id)
-  # past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), vn.shows))
-  #past_shows_list = get_shows_for_venue_orm(past_shows)
-  # upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
-  # upcoming_shows_list = get_shows_for_venue_orm(upcoming_shows)
+  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), vn.shows))
+  past_shows_list = get_shows_for_venue_orm(past_shows)
+  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
+  upcoming_shows_list = get_shows_for_venue_orm(upcoming_shows)
   
 
   #using SQL statement
-  past_shows_list = get_shows_sql('<', venue_id, 'artist', 'venue')
-  upcoming_shows_list = get_shows_sql('>', venue_id, 'artist', 'venue')
+  # past_shows_list = get_shows_sql('<', venue_id, 'artist', 'venue')
+  # upcoming_shows_list = get_shows_sql('>', venue_id, 'artist', 'venue')
 
   data = vars(vn)
   data["genres"] = list(map(lambda genre: genre.name ,vn.genres))
@@ -322,10 +322,10 @@ def search_artists():
   search_trm = request.form.get('search_term', '')
   
   #using ORM
-  #data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
+  data = db.session.query(Artist.id, Artist.name).filter(Artist.name.ilike('%'+ search_trm +'%')).all()
   
   #using SQL statement
-  data = db.session.execute("SELECT id, name FROM artists WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
+  #data = db.session.execute("SELECT id, name FROM artists WHERE name ILIKE :search_term;", {'search_term':'%'+search_trm+'%'}).fetchall()
 
   response = {
     "count": len(data),
@@ -348,14 +348,14 @@ def show_artist(artist_id):
   
   # using ORM 
   artist = Artist.query.get(artist_id)
-  # past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), artist.shows))
-  # past_shows_list = get_shows_for_artist_orm(past_shows)
-  # upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), artist.shows))
-  # upcoming_shows_list = get_shows_for_artist_orm(upcoming_shows)
+  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), artist.shows))
+  past_shows_list = get_shows_for_artist_orm(past_shows)
+  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), artist.shows))
+  upcoming_shows_list = get_shows_for_artist_orm(upcoming_shows)
   
   # using SQL
-  past_shows_list = get_shows_sql('<', artist_id, 'venue', 'artist')
-  upcoming_shows_list = get_shows_sql('>', artist_id, 'venue', 'artist')
+  # past_shows_list = get_shows_sql('<', artist_id, 'venue', 'artist')
+  # upcoming_shows_list = get_shows_sql('>', artist_id, 'venue', 'artist')
 
 
   data = vars(artist)
