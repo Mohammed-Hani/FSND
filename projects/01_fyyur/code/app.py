@@ -109,23 +109,8 @@ def search_venues():
   # }
   return render_template('pages/search_venues.html', results=response, search_term=search_trm)
 
-def get_shows_for_venue_orm(shws):
-  return list(map(lambda shw: {
-    'artist_id': shw.artist_id,
-    'artist_name': shw.artist.name,
-    'artist_image_link': shw.artist.image_link,
-    'start_time': shw.start_time},
-    shws))
-
-def get_shows_for_artist_orm(shws):
-  return list(map(lambda shw: {
-    'venue_id': shw.venue_id,
-    'venue_name': shw.venue.name,
-    'venue_image_link': shw.venue.image_link,
-    'start_time': shw.start_time},
-    shws))
-
 def get_shows_sql(sign, model_id, out_model_type, in_model_type):
+  
   str_stmt = """
     SELECT shows.{model_type}_id, {model_type}s.name, {model_type}s.image_link, shows.start_time
     FROM shows JOIN {model_type}s
@@ -143,12 +128,12 @@ def show_venue(venue_id):
   
   # using ORM
   vn = Venue.query.get(venue_id)
-  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), vn.shows))
-  past_shows_list = get_shows_for_venue_orm(past_shows)
-  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), vn.shows))
-  upcoming_shows_list = get_shows_for_venue_orm(upcoming_shows)
-  
+  past_shows_list = db.session.query(Show.artist_id, Artist.name, Artist.image_link, Show.start_time).join(Artist)\
+    .filter(Show.venue_id == venue_id, Show.start_time < datetime.now()).all()
 
+  upcoming_shows_list = db.session.query(Show.artist_id, Artist.name, Artist.image_link, Show.start_time).join(Artist)\
+    .filter(Show.venue_id == venue_id, Show.start_time > datetime.now()).all()
+  
   #using SQL statement
   # past_shows_list = get_shows_sql('<', venue_id, 'artist', 'venue')
   # upcoming_shows_list = get_shows_sql('>', venue_id, 'artist', 'venue')
@@ -348,10 +333,11 @@ def show_artist(artist_id):
   
   # using ORM 
   artist = Artist.query.get(artist_id)
-  past_shows = list(filter(lambda shw: shw.start_time < datetime.now(), artist.shows))
-  past_shows_list = get_shows_for_artist_orm(past_shows)
-  upcoming_shows = list(filter(lambda shw: shw.start_time > datetime.now(), artist.shows))
-  upcoming_shows_list = get_shows_for_artist_orm(upcoming_shows)
+  past_shows_list = db.session.query(Show.venue_id, Venue.name, Venue.image_link, Show.start_time).join(Venue)\
+    .filter(Show.artist_id == artist_id, Show.start_time < datetime.now()).all()
+
+  upcoming_shows_list = db.session.query(Show.venue_id, Venue.name, Venue.image_link, Show.start_time).join(Venue)\
+    .filter(Show.artist_id == artist_id, Show.start_time > datetime.now()).all()
   
   # using SQL
   # past_shows_list = get_shows_sql('<', artist_id, 'venue', 'artist')
