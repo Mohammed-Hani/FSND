@@ -5,7 +5,7 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ venue.name }}
-			<a href="/venues/{{ venue.id }}" title="Delete Venue"><i class="fa fa-eraser pull-right" aria-hidden="true"></i></a>
+			<button onclick="deleteVenue()" class="btn btn-warning pull-right" title="Delete Venue"><i class="fa fa-eraser" aria-hidden="true"></i></button>
 			<a href="/venues/{{ venue.id }}/edit" title="Edit Venue"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
 		</h1>
 		<p class="subtitle">
@@ -76,6 +76,21 @@
 		{% endfor %}
 	</div>
 </section>
-
+<script>
+	function deleteVenue() {
+		var csrf_token = "{{ csrf_token() }}";
+		fetch('/venues/{{ venue.id }}', {
+				method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrf_token
+                }
+			})
+			.then(response => {
+				if (response.redirected)
+					window.location.href = response.url;
+        
+			});
+	}
+</script>
 {% endblock %}
 
