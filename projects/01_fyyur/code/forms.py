@@ -148,7 +148,7 @@ with app.app_context():
             'phone')
         web_link = StringField('web_link', validators=[URL()])
         image_link = StringField('image_link')
-        genres = SelectMultipleField(# implement enum restriction
+        genres_field = SelectMultipleField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField(# implement enum restriction

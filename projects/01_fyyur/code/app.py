@@ -239,16 +239,13 @@ def create_venue_submission():
   # modify data to be the data object returned from db insertion
   error = False
   deassociatedDict = {}
-  form = VenueForm(request.form)
+  req = request.form
+  form = VenueForm(req)
   if form.validate():
     try:
-        # req = request.form
         venue = Venue()
         form.populate_obj(venue)
-        # venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-        #              phone=req['phone'], facebook_link=req['facebook_link'], seeking_talent=req.get('seeking_talent') != None,
-        #              seeking_description=req['seeking_description'], web_link=req['web_link'], image_link=req['image_link'])
-        venue.genres.extend(Genre.query.filter(Genre.name.in_(request.form.getlist('genres'))).all())
+        venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
         deassociatedDict = { 'name': venue.name}
         db.session.add(venue)
         db.session.commit()
@@ -503,31 +500,38 @@ def create_artist_submission():
   # modify data to be the data object returned from db insertion
   error = False
   deassociatedDict = {}
-  try:
-      req = request.form
-      artist = Artist(name=req['name'], city=req['city'], state=req['state'], phone=req['phone'], 
-                      facebook_link=req['facebook_link'], web_link=req['web_link'], image_link=req['image_link'],
-                      seeking_venue=req.get('seeking_venue') != None, seeking_description=req['seeking_description'])
-      artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
-      deassociatedDict = { 'name': artist.name}
-      db.session.add(artist)
-      db.session.commit()
-  except:
-        error = True
-        db.session.rollback()
-        print(sys.exc_info())
-  finally:
-      db.session.close()
-      if error == True:
-          flash('Artist ' + deassociatedDict['name'] + ' could not be listed!', 'error')
-          abort(500)
-      else:
-          # on successful db insert, flash success
-          flash('Artist ' + deassociatedDict['name'] + ' was successfully listed!')
-          # on unsuccessful db insert, flash an error instead.
-          # e.g., flash('An error occurred.  Artist ' + data.name + ' could not be
-          # listed.')
-          return render_template('pages/home.html')
+  req = request.form
+  form = ArtistForm(req)
+  if form.validate():
+    try:
+        artist = Artist()
+        form.populate_obj(artist)
+        artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
+        deassociatedDict = { 'name': artist.name}
+        db.session.add(artist)
+        db.session.commit()
+    except:
+          error = True
+          db.session.rollback()
+          print(sys.exc_info())
+    finally:
+        db.session.close()
+        if error == True:
+            flash('Artist ' + deassociatedDict['name'] + ' could not be listed!', 'error')
+            abort(500)
+        else:
+            # on successful db insert, flash success
+            flash('Artist ' + deassociatedDict['name'] + ' was successfully listed!')
+            # on unsuccessful db insert, flash an error instead.
+            # e.g., flash('An error occurred.  Artist ' + data.name + ' could not be
+            # listed.')
+            return render_template('pages/home.html')
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Errors ' + str(message))
+    return render_template('pages/home.html')
 
 
 #  Shows
@@ -596,28 +600,35 @@ def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # insert form data as a new Show record in the db, instead
   error = False
-  try:
-      req = request.form
-      print(req['start_time'])
-      show = Show(artist_id=req['artist_id'], venue_id=req['venue_id'], start_time=req['start_time'])
-      db.session.add(show)
-      db.session.commit()
-  except:
-        error = True
-        db.session.rollback()
-        print(sys.exc_info())
-  finally:
-      db.session.close()
-      if error == True:
-          flash('An error occurred.  Show could not be listed.', 'error')
-          abort(500)
-      else:
-          # on successful db insert, flash success
-          flash('Show was successfully listed!')
-          # on unsuccessful db insert, flash an error instead.
-          # e.g., flash('An error occurred.  Show could not be listed.')
-          # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-          return render_template('pages/home.html')
+  form = ShowForm(request.form)
+  if form.validate():
+    try:
+        show = Show()
+        form.populate_obj(show)
+        db.session.add(show)
+        db.session.commit()
+    except:
+          error = True
+          db.session.rollback()
+          print(sys.exc_info())
+    finally:
+        db.session.close()
+        if error == True:
+            flash('An error occurred.  Show could not be listed.', 'error')
+            abort(500)
+        else:
+            # on successful db insert, flash success
+            flash('Show was successfully listed!')
+            # on unsuccessful db insert, flash an error instead.
+            # e.g., flash('An error occurred.  Show could not be listed.')
+            # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+            return render_template('pages/home.html')
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Errors ' + str(message))
+    return render_template('pages/home.html')
 
 @app.errorhandler(404)
 def not_found_error(error):
