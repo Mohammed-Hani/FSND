@@ -128,10 +128,10 @@ def show_venue(venue_id):
   
   # using ORM
   vn = Venue.query.get(venue_id)
-  past_shows_list = db.session.query(Show.artist_id, Artist.name, Artist.image_link, Show.start_time).join(Artist)\
+  past_shows_list = db.session.query(Show.artist_id, Artist.name.label('artist_name'), Artist.image_link.label('artist_image_link'), Show.start_time).join(Artist)\
     .filter(Show.venue_id == venue_id, Show.start_time < datetime.now()).all()
 
-  upcoming_shows_list = db.session.query(Show.artist_id, Artist.name, Artist.image_link, Show.start_time).join(Artist)\
+  upcoming_shows_list = db.session.query(Show.artist_id, Artist.name.label('artist_name'), Artist.image_link.label('artist_image_link'), Show.start_time).join(Artist)\
     .filter(Show.venue_id == venue_id, Show.start_time > datetime.now()).all()
   
   #using SQL statement
@@ -340,10 +340,10 @@ def show_artist(artist_id):
   
   # using ORM 
   artist = Artist.query.get(artist_id)
-  past_shows_list = db.session.query(Show.venue_id, Venue.name, Venue.image_link, Show.start_time).join(Venue)\
+  past_shows_list = db.session.query(Show.venue_id, Venue.name.label('venue_name'), Venue.image_link.label('venue_image_link'), Show.start_time).join(Venue)\
     .filter(Show.artist_id == artist_id, Show.start_time < datetime.now()).all()
 
-  upcoming_shows_list = db.session.query(Show.venue_id, Venue.name, Venue.image_link, Show.start_time).join(Venue)\
+  upcoming_shows_list = db.session.query(Show.venue_id, Venue.name.label('venue_name'), Venue.image_link.label('venue_image_link'), Show.start_time).join(Venue)\
     .filter(Show.artist_id == artist_id, Show.start_time > datetime.now()).all()
   
   # using SQL
