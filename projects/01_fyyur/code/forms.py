@@ -5,6 +5,19 @@ from wtforms.validators import DataRequired, AnyOf, URL
 from appFactory import create_app
 from models import Genre
 
+class SelectMultipleGenresField(SelectMultipleField):
+    def __init__(self, label='', validators=None, **kwargs):
+        super(SelectMultipleGenresField, self).__init__(label, validators, **kwargs)
+
+    def post_validate(self, form, validation_stopped):
+        super(SelectMultipleGenresField, self).post_validate(form, validation_stopped)
+        
+        if (not validation_stopped):
+            self.data = Genre.query.filter(Genre.name.in_(self.data)).all()
+
+    
+
+
 app = create_app()
 with app.app_context():
     
@@ -80,7 +93,7 @@ with app.app_context():
         seeking_description = StringField('seeking_description')
         web_link = StringField('web_link', validators=[URL()])
         image_link = StringField('image_link', validators=[URL()])
-        genres_field = SelectMultipleField(# implement enum restriction
+        genres = SelectMultipleGenresField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField('facebook_link', validators=[URL()])
@@ -148,7 +161,7 @@ with app.app_context():
             'phone')
         web_link = StringField('web_link', validators=[URL()])
         image_link = StringField('image_link')
-        genres_field = SelectMultipleField(# implement enum restriction
+        genres = SelectMultipleGenresField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField(# implement enum restriction

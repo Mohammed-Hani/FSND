@@ -137,7 +137,7 @@ def create_venue_submission():
     try:
         venue = Venue()
         form.populate_obj(venue)
-        venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
+        #venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
         deassociatedDict = { 'name': venue.name}
         db.session.add(venue)
         db.session.commit()
@@ -310,7 +310,7 @@ def create_artist_submission():
     try:
         artist = Artist()
         form.populate_obj(artist)
-        artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
+        #artist.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
         deassociatedDict = { 'name': artist.name}
         db.session.add(artist)
         db.session.commit()
