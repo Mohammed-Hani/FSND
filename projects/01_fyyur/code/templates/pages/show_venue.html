@@ -5,6 +5,8 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ venue.name }}
+			<a href="/venues/{{ venue.id }}" title="Delete Venue"><i class="fa fa-eraser pull-right" aria-hidden="true"></i></a>
+			<a href="/venues/{{ venue.id }}/edit" title="Edit Venue"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
 		</h1>
 		<p class="subtitle">
 			ID: {{ venue.id }}
@@ -24,7 +26,7 @@
 			<i class="fas fa-phone-alt"></i> {% if venue.phone %}{{ venue.phone }}{% else %}No Phone{% endif %}
 		</p>
 		<p>
-			<i class="fas fa-link"></i> {% if venue.website %}<a href="{{ venue.website }}" target="_blank">{{ venue.website }}</a>{% else %}No Website{% endif %}
+			<i class="fas fa-link"></i> {% if venue.web_link %}<a href="{{ venue.web_link }}" target="_blank">{{ venue.web_link }}</a>{% else %}No Website{% endif %}
 		</p>
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if venue.facebook_link %}<a href="{{ venue.facebook_link }}" target="_blank">{{ venue.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
