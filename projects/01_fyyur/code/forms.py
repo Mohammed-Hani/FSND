@@ -14,6 +14,18 @@ class SelectMultipleGenresField(SelectMultipleField):
         
         if (not validation_stopped):
             self.data = Genre.query.filter(Genre.name.in_(self.data)).all()
+    def process_data(self, value):
+        try:
+            if not value:
+                value = None
+            elif isinstance(value[0], Genre):
+                value = list(map(lambda genr: genr.name, value))
+            self.data = value
+        except (ValueError, TypeError):
+            self.data = None
+        super(SelectMultipleGenresField, self).process_data(value)
+        
+        
 
     
 
