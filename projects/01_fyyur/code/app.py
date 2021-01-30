@@ -239,12 +239,15 @@ def create_venue_submission():
   # modify data to be the data object returned from db insertion
   error = False
   deassociatedDict = {}
+  form = VenueForm(request.form)
   try:
       req = request.form
-      venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-                   phone=req['phone'], facebook_link=req['facebook_link'], seeking_talent=req.get('seeking_talent') != None,
-                   seeking_description=req['seeking_description'], web_link=req['web_link'], image_link=req['image_link'])
-      venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
+      venue = Venue()
+      form.populate_obj(venue)
+      # venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
+      #              phone=req['phone'], facebook_link=req['facebook_link'], seeking_talent=req.get('seeking_talent') != None,
+      #              seeking_description=req['seeking_description'], web_link=req['web_link'], image_link=req['image_link'])
+      # venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
       deassociatedDict = { 'name': venue.name}
       db.session.add(venue)
       db.session.commit()
