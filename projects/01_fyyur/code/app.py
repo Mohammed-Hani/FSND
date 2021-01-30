@@ -240,34 +240,53 @@ def show_artist(artist_id):
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
-  form = ArtistForm()
-  artist = {
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
-  # TODO: populate form with fields from artist with ID <artist_id>
+  artist = Artist.query.get(artist_id)
+  form = ArtistForm(obj=artist)
+  # populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
+  # take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
-
-  return redirect(url_for('show_artist', artist_id=artist_id))
+  error = False
+  deassociatedDict = {}
+  req = request.form
+  form = ArtistForm(req)
+  if form.validate():
+    try:
+        artist = Artist.query.get(artist_id)
+        form.populate_obj(artist)
+        deassociatedDict = { 'name': artist.name}
+        db.session.commit()
+    except:
+          error = True
+          db.session.rollback()
+          print(sys.exc_info())
+    finally:
+        db.session.close()
+        if error == True:
+            flash('Artist ' + deassociatedDict['name'] + ' cannot be editted!', 'error')
+            abort(500)
+        else:
+            # on successful db insert, flash success
+            flash('Artist ' + deassociatedDict['name'] + ' was successfully editted!')
+            # on unsuccessful db insert, flash an error instead.
+            # e.g., flash('An error occurred.  Venue ' + data.name + ' could not be
+            # listed.')
+            # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+            return redirect(url_for('show_artist', artist_id=artist_id))
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Errors ' + str(message))
+    return render_template('pages/home.html')
+  
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   venue = Venue.query.get(venue_id)
-  print(venue)
   form = VenueForm(obj=venue)
   # populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=venue)
