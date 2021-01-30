@@ -5,6 +5,8 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ artist.name }}
+			<a href="/artists/{{ artist.id }}" title="Delete Artist"><i class="fa fa-eraser pull-right" aria-hidden="true"></i></a>
+			<a href="/artists/{{ artist.id }}/edit" title="Edit Artist"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
 		</h1>
 		<p class="subtitle">
 			ID: {{ artist.id }}
@@ -40,7 +42,7 @@
 		{% endif %}
 	</div>
 	<div class="col-sm-6">
-		<img src="{{ artist.image_link }}" alt="Venue Image" />
+		<img src="{{ artist.image_link }}" alt="Artist Image" />
 	</div>
 </div>
 <section>
