@@ -18,7 +18,7 @@ class Show(db.Model):
     venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     artist = db.relationship("Artist", backref="shows")
-    venue = db.relationship("Venue", backref="shows")
+    
 
 venues_genres = db.Table('venues_genres',
     db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
@@ -46,6 +46,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     genres = db.relationship('Genre', secondary=venues_genres,
       backref=db.backref('venues', lazy=True))
+    shows = db.relationship("Show", backref="venue", cascade='all, delete-orphan')
 
     # implement any missing fields, as a database migration using Flask-Migrate
 class Artist(db.Model):
