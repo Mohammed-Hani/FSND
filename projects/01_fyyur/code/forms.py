@@ -80,7 +80,7 @@ with app.app_context():
         seeking_description = StringField('seeking_description')
         web_link = StringField('web_link', validators=[URL()])
         image_link = StringField('image_link', validators=[URL()])
-        genres = SelectMultipleField(# implement enum restriction
+        genres_field = SelectMultipleField(# implement enum restriction
             'genres', validators=[DataRequired()],
             choices=genres_choices)
         facebook_link = StringField('facebook_link', validators=[URL()])

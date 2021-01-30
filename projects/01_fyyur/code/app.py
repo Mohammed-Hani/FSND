@@ -240,34 +240,41 @@ def create_venue_submission():
   error = False
   deassociatedDict = {}
   form = VenueForm(request.form)
-  try:
-      req = request.form
-      venue = Venue()
-      form.populate_obj(venue)
-      # venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
-      #              phone=req['phone'], facebook_link=req['facebook_link'], seeking_talent=req.get('seeking_talent') != None,
-      #              seeking_description=req['seeking_description'], web_link=req['web_link'], image_link=req['image_link'])
-      # venue.genres.extend(Genre.query.filter(Genre.name.in_(req.getlist('genres'))).all())
-      deassociatedDict = { 'name': venue.name}
-      db.session.add(venue)
-      db.session.commit()
-  except:
-        error = True
-        db.session.rollback()
-        print(sys.exc_info())
-  finally:
-      db.session.close()
-      if error == True:
-          flash('Venue ' + deassociatedDict['name'] + ' cannot be listed!', 'error')
-          abort(500)
-      else:
-          # on successful db insert, flash success
-          flash('Venue ' + deassociatedDict['name'] + ' was successfully listed!')
-          # on unsuccessful db insert, flash an error instead.
-          # e.g., flash('An error occurred.  Venue ' + data.name + ' could not be
-          # listed.')
-          # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-          return render_template('pages/home.html')
+  if form.validate():
+    try:
+        # req = request.form
+        venue = Venue()
+        form.populate_obj(venue)
+        # venue = Venue(name=req['name'], city=req['city'], state=req['state'], address=req['address'],
+        #              phone=req['phone'], facebook_link=req['facebook_link'], seeking_talent=req.get('seeking_talent') != None,
+        #              seeking_description=req['seeking_description'], web_link=req['web_link'], image_link=req['image_link'])
+        venue.genres.extend(Genre.query.filter(Genre.name.in_(request.form.getlist('genres'))).all())
+        deassociatedDict = { 'name': venue.name}
+        db.session.add(venue)
+        db.session.commit()
+    except:
+          error = True
+          db.session.rollback()
+          print(sys.exc_info())
+    finally:
+        db.session.close()
+        if error == True:
+            flash('Venue ' + deassociatedDict['name'] + ' cannot be listed!', 'error')
+            abort(500)
+        else:
+            # on successful db insert, flash success
+            flash('Venue ' + deassociatedDict['name'] + ' was successfully listed!')
+            # on unsuccessful db insert, flash an error instead.
+            # e.g., flash('An error occurred.  Venue ' + data.name + ' could not be
+            # listed.')
+            # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+            return render_template('pages/home.html')
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Errors ' + str(message))
+    return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
