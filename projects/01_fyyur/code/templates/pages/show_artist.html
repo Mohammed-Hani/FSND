@@ -5,8 +5,8 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ artist.name }}
-			<a href="/artists/{{ artist.id }}" title="Delete Artist"><i class="fa fa-eraser pull-right" aria-hidden="true"></i></a>
-			<a href="/artists/{{ artist.id }}/edit" title="Edit Artist"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
+			<button onclick="deleteArtist()" class="btn btn-warning pull-right" title="Delete Artist"><i class="fa fa-eraser" aria-hidden="true"></i></button>
+			<a href="/artist/{{ artist.id }}/edit" title="Edit Artist"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
 		</h1>
 		<p class="subtitle">
 			ID: {{ artist.id }}
@@ -73,6 +73,21 @@
 		{% endfor %}
 	</div>
 </section>
-
+<script>
+	function deleteArtist() {
+		var csrf_token = "{{ csrf_token() }}";
+		fetch('/artists/{{ artist.id }}', {
+				method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrf_token
+                }
+			})
+			.then(response => {
+				if (response.redirected)
+					window.location.href = response.url;
+        
+			});
+	}
+</script>
 {% endblock %}
 

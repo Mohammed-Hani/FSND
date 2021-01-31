@@ -192,12 +192,14 @@ def delete_venue(venue_id):
   # SQLAlchemy ORM to delete a record.  Handle cases where the session commit
   # could fail.
     return delete_obj(Venue, venue_id)
-
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have
-  # it so that
-  # clicking that button delete it from the db then redirect the user to the
-  # homepage
   
+
+@app.route('/artists/<artist_id>', methods=['DELETE'])
+def delete_artist(artist_id):
+  # taking an artist_id, and using
+  # SQLAlchemy ORM to delete a record.  Handle cases where the session commit
+  # could fail.
+    return delete_obj(Artist, artist_id)
 
 
 #  Artists

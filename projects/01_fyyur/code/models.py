@@ -17,7 +17,7 @@ class Show(db.Model):
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
-    artist = db.relationship("Artist", backref="shows")
+    
     
 
 venues_genres = db.Table('venues_genres',
@@ -64,3 +64,4 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String())
     genres = db.relationship('Genre', secondary=artists_genres,
       backref=db.backref('artists', lazy=True))
+    shows = db.relationship("Show", backref="artist", cascade='all, delete-orphan')
