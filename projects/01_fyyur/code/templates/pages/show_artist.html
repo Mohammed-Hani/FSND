@@ -5,8 +5,8 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ artist.name }}
-			<button onclick="deleteArtist()" class="btn btn-warning pull-right" title="Delete Artist"><i class="fa fa-eraser" aria-hidden="true"></i></button>
-			<a href="/artist/{{ artist.id }}/edit" title="Edit Artist"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
+			<button onclick="deleteArtist()" class="btn btn-danger pull-right" title="Delete Artist"><i class="fa fa-eraser" aria-hidden="true"></i></button>
+			<a href="/artists/{{ artist.id }}/edit" title="Edit Artist"><i class="fa fa-edit pull-right" aria-hidden="true"></i></a>
 		</h1>
 		<p class="subtitle">
 			ID: {{ artist.id }}
