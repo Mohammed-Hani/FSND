@@ -53,14 +53,14 @@ def create_app(test_config=None):
   @app.route('/categories')
   def retrieve_categories():
     categories = get_formated_categories()
-    
+    categories_dict = {cat['id']:cat['type'] for cat in categories}
 
     if len(categories) == 0:
       abort(404)
     else:
       return jsonify({
         'success':True,
-        'categories': categories
+        'categories': categories_dict
         })
 
 
