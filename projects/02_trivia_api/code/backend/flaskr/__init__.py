@@ -28,6 +28,15 @@ def create_app(test_config=None):
   '''
   CORS(app)
 
+
+  def get_formated_categories():
+    categories = Category.query.order_by(Category.id).all()
+    categories = [category.format() for category in categories]
+
+    return categories
+
+
+
   '''
   @ Use the after_request decorator to set Access-Control-Allow
   '''
@@ -43,8 +52,8 @@ def create_app(test_config=None):
   '''
   @app.route('/categories')
   def retrieve_categories():
-    categories = Category.query.order_by(Category.id).all()
-    categories = [category.format() for category in categories]
+    categories = get_formated_categories()
+    
 
     if len(categories) == 0:
       abort(404)
@@ -67,7 +76,24 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
-  
+  @app.route('/questions')
+  def retrieve_questions():
+    selection = Question.query.order_by(Question.id).all()
+    current_questions = paginate_objects(request, selection, QUESTIONS_PER_PAGE)
+    
+    categories = get_formated_categories()
+    categories_dict = {cat['id']:cat['type'] for cat in categories}
+
+    if len(current_questions) == 0:
+      abort(404)
+    else:
+      return jsonify({
+        'success':True,
+        'questions': current_questions,
+        'total_questions': len(Question.query.all()),
+        'categories': categories_dict,
+        'current_category': 0
+        })
 
 
 
