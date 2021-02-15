@@ -21,7 +21,7 @@ def create_app(test_config=None):
   '''
   @ Use the after_request decorator to set Access-Control-Allow
   '''
-   @app.after_request
+  @app.after_request
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
@@ -33,7 +33,8 @@ def create_app(test_config=None):
   '''
   @app.route('/categories')
   def retrieve_categories():
-    categories = Book.query.order_by(Category.id).all()
+    categories = Category.query.order_by(Category.id).all()
+    categories = [category.format() for category in categories]
     
     if len(categories) == 0:
       abort(404)
@@ -56,6 +57,9 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  
+
+
 
   '''
   @TODO: 
