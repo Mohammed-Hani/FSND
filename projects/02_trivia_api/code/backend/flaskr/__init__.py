@@ -8,6 +8,16 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_objects(request, selection, objects_per_page):
+  page = request.args.get('page', 1, type=int)
+  start = (page - 1) * objects_per_page
+  end = start + objects_per_page
+
+  objects = [obj.format() for obj in selection]
+  current_objects = objects[start:end]
+
+  return current_objects
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -35,7 +45,7 @@ def create_app(test_config=None):
   def retrieve_categories():
     categories = Category.query.order_by(Category.id).all()
     categories = [category.format() for category in categories]
-    
+
     if len(categories) == 0:
       abort(404)
     else:
