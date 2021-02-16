@@ -8,10 +8,10 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
-def paginate_objects(request, selection, objects_per_page):
+def paginate_questions(request, selection):
   page = request.args.get('page', 1, type=int)
-  start = (page - 1) * objects_per_page
-  end = start + objects_per_page
+  start = (page - 1) * QUESTIONS_PER_PAGE
+  end = start + QUESTIONS_PER_PAGE
 
   objects = [obj.format() for obj in selection]
   current_objects = objects[start:end]
@@ -64,9 +64,8 @@ def create_app(test_config=None):
         })
 
 
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests for questions, 
+  ''' 
+  An endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
   number of total questions, current category, categories. 
@@ -79,7 +78,7 @@ def create_app(test_config=None):
   @app.route('/questions')
   def retrieve_questions():
     selection = Question.query.order_by(Question.id).all()
-    current_questions = paginate_objects(request, selection, QUESTIONS_PER_PAGE)
+    current_questions = paginate_questions(request, selection)
     
     categories = get_formated_categories()
     categories_dict = {cat['id']:cat['type'] for cat in categories}
@@ -97,8 +96,7 @@ def create_app(test_config=None):
 
 
 
-  '''
-  @TODO: 
+  ''' 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
@@ -132,6 +130,43 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_book():
+    body = request.get_json()
+    if 'search' in body:
+      selection = Question.query.filter(Question.title.ilike('%'+ body['search'] +'%')).order_by(Question.id).all()
+      current_books = paginate_questions(request, selection)
+    
+      if len(current_books) == 0:
+        abort(404)
+      else:
+        return jsonify({
+          'success':True,
+          'books': current_books,
+          'total_books': len(selection)
+          })
+
+    new_question = body.get('question', None)
+    new_answer = body.get('answer', None)
+    new_difficulty = body.get('difficulty', None)
+    new_category = body.get('category', None)
+
+    try:
+     
+     
+      question = Question(question=new_question, answer=new_answer, difficulty=new_difficulty, category=new_category)
+      question.insert()
+      selection = Question.query.order_by(Question.id).all()
+      
+      current_questions = paginate_questions(request, selection)
+
+      return jsonify({
+            'success': True,
+            'created': question.id
+            })
+
+    except:
+      abort(422)
 
   '''
   @TODO: 
