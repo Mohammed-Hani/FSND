@@ -23,7 +23,7 @@ class QuestionView extends Component {
 
   getQuestions = () => {
     $.ajax({
-      url: `/questions?page=${this.state.page}`, //TODO: update request URL
+      url: `/questions?page=${this.state.page}${this.state.currentCategory?`&cat=${this.state.currentCategory}`:``}`, //TODO: update request URL
       type: "GET",
       success: (result) => {
         this.setState({
@@ -123,7 +123,10 @@ class QuestionView extends Component {
     return (
       <div className="question-view">
         <div className="categories-list">
-          <h2 onClick={() => {this.getQuestions()}}>Categories</h2>
+          <h2 onClick={async () => {
+            await this.setState({currentCategory:null}); 
+            this.getQuestions()
+            }}>Categories</h2>
           <ul>
             {Object.keys(this.state.categories).map((id, ) => (
               <li key={id} onClick={() => {this.getByCategory(id)}}>

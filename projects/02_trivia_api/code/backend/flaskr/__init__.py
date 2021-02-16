@@ -77,7 +77,11 @@ def create_app(test_config=None):
   '''
   @app.route('/questions')
   def retrieve_questions():
-    selection = Question.query.order_by(Question.id).all()
+    category_id = request.args.get('cat', -1, type=int)
+    if (category_id == -1):
+      selection = Question.query.order_by(Question.id).all()
+    else:
+      selection = Question.query.filter(Question.category == category_id).order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)
     
     categories = get_formated_categories()
@@ -91,7 +95,7 @@ def create_app(test_config=None):
         'questions': current_questions,
         'total_questions': len(Question.query.all()),
         'categories': categories_dict,
-        'current_category': 0
+        'current_category': category_id
         })
 
 
@@ -179,14 +183,31 @@ def create_app(test_config=None):
   Try using the word "title" to start. 
   '''
 
-  '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
+  ''' 
+  A GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<int:category_id>/questions')
+  def retrieve_questions_by_category_id(category_id):
+    try:
+      selection = Question.query.filter(Question.category == category_id).order_by(Question.id).all()
+      current_questions = paginate_questions(request, selection)
+
+      if len(current_questions) == 0:
+        abort(404)
+      else:
+        return jsonify({
+            'success': True,
+            'questions': current_questions,
+            'total_questions': len(selection),
+            'current_category': category_id
+            })
+
+    except:
+      abort(422)
 
 
   '''
