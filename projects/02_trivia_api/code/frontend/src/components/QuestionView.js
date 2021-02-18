@@ -140,7 +140,7 @@ class QuestionView extends Component {
             {Object.keys(this.state.categories).map((id, ) => (
               <li key={id} onClick={ async () => {
                 if (this.state.searchKeyword){
-                  await this.setState({currentCategory:id});
+                  await this.setState({currentCategory:parseInt(id)});
                   this.submitSearch(this.state.searchKeyword)
                 }
                 else

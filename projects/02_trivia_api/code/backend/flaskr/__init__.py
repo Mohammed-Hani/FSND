@@ -148,7 +148,7 @@ def create_app(test_config=None):
     body = request.get_json()
     print(body)
     if 'searchTerm' in body:
-      category_id = int(body['currentCategory'])
+      category_id = body['currentCategory']
       page = body['page']
 
       if category_id > 0:
