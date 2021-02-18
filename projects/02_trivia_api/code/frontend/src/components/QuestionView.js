@@ -14,6 +14,7 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: {},
       currentCategory: null,
+      searchKeyword: ''
     }
   }
 
@@ -41,7 +42,7 @@ class QuestionView extends Component {
   }
 
   selectPage(num) {
-    this.setState({page: num}, () => this.getQuestions());
+    this.setState({page: num}, () => this.state.searchKeyword? this.submitSearch(this.state.searchKeyword) : this.getQuestions());
   }
 
   createPagination(){
@@ -58,7 +59,7 @@ class QuestionView extends Component {
     return pageNumbers;
   }
 
-  getByCategory= (id) => {
+  getByCategory= (id) => {      
     $.ajax({
       url: `/categories/${id}/questions`, //TODO: update request URL
       type: "GET",
@@ -76,13 +77,20 @@ class QuestionView extends Component {
     })
   }
 
+  clearSearchHandler = () => {
+      this.setState({searchKeyword:''})
+      this.getQuestions();
+  } 
+
   submitSearch = (searchTerm) => {
     $.ajax({
       url: `/questions`, //TODO: update request URL
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({searchTerm: searchTerm}),
+      data: JSON.stringify({searchTerm: searchTerm,
+                            currentCategory: this.state.currentCategory,
+                            page: this.state.page}),
       xhrFields: {
         withCredentials: true
       },
@@ -91,7 +99,8 @@ class QuestionView extends Component {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
-          currentCategory: result.current_category })
+          currentCategory: result.current_category,
+          searchKeyword: searchTerm })
         return;
       },
       error: (error) => {
@@ -108,7 +117,7 @@ class QuestionView extends Component {
           url: `/questions/${id}`, //TODO: update request URL
           type: "DELETE",
           success: (result) => {
-            this.getQuestions();
+            this.state.searchKeyword? this.submitSearch(this.state.searchKeyword) : this.getQuestions()
           },
           error: (error) => {
             alert('Unable to load questions. Please try your request again')
@@ -125,17 +134,23 @@ class QuestionView extends Component {
         <div className="categories-list">
           <h2 onClick={async () => {
             await this.setState({currentCategory:null}); 
-            this.getQuestions()
+            this.state.searchKeyword? this.submitSearch(this.state.searchKeyword) : this.getQuestions()
             }}>Categories</h2>
           <ul>
             {Object.keys(this.state.categories).map((id, ) => (
-              <li key={id} onClick={() => {this.getByCategory(id)}}>
+              <li key={id} onClick={ async () => {
+                if (this.state.searchKeyword){
+                  await this.setState({currentCategory:id});
+                  this.submitSearch(this.state.searchKeyword)
+                }
+                else
+                  this.getByCategory(id)}}>
                 {this.state.categories[id]}
                 <img className="category" src={`${this.state.categories[id]}.svg`}/>
               </li>
             ))}
           </ul>
-          <Search submitSearch={this.submitSearch}/>
+          <Search submitSearch={this.submitSearch} clearSearch={this.clearSearchHandler}/>
         </div>
         <div className="questions-list">
           <h2>Questions</h2>

@@ -18,6 +18,15 @@ def paginate_questions(request, selection):
 
   return current_objects
 
+def paginate_questions_search(page, selection):
+  start = (page - 1) * QUESTIONS_PER_PAGE
+  end = start + QUESTIONS_PER_PAGE
+
+  objects = [obj.format() for obj in selection]
+  current_objects = objects[start:end]
+
+  return current_objects
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -93,7 +102,7 @@ def create_app(test_config=None):
       return jsonify({
         'success':True,
         'questions': current_questions,
-        'total_questions': len(Question.query.all()),
+        'total_questions': len(selection),
         'categories': categories_dict,
         'current_category': category_id
         })
@@ -135,19 +144,28 @@ def create_app(test_config=None):
   of the questions list in the "List" tab.  
   '''
   @app.route('/questions', methods=['POST'])
-  def create_book():
+  def create_search_question():
     body = request.get_json()
-    if 'search' in body:
-      selection = Question.query.filter(Question.title.ilike('%'+ body['search'] +'%')).order_by(Question.id).all()
-      current_books = paginate_questions(request, selection)
+    print(body)
+    if 'searchTerm' in body:
+      category_id = int(body['currentCategory'])
+      page = body['page']
+
+      if category_id > 0:
+        selection = Question.query.filter(Question.question.ilike('%'+ body['searchTerm'] +'%'), Question.category == category_id).order_by(Question.id).all()
+      else:
+        selection = Question.query.filter(Question.question.ilike('%'+ body['searchTerm'] +'%')).order_by(Question.id).all()
+      #print('got selection')
+      current_questions = paginate_questions_search(page, selection)
     
-      if len(current_books) == 0:
+      if len(current_questions) == 0:
         abort(404)
       else:
         return jsonify({
           'success':True,
-          'books': current_books,
-          'total_books': len(selection)
+          'questions': current_questions,
+          'total_questions': len(selection),
+          'current_category': category_id
           })
 
     new_question = body.get('question', None)

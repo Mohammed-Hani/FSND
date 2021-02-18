@@ -14,6 +14,8 @@ class Search extends Component {
     this.setState({
       query: this.search.value
     })
+    if (!this.search.value)
+      this.props.clearSearch();
   }
 
   render() {
