@@ -149,7 +149,7 @@ def create_app(test_config=None):
     print(body)
     if 'searchTerm' in body:
       category_id = (lambda x: x if x != None else -1) (body.get('currentCategory'))
-      page = body['page']
+      page = body.get('page',1)
 
       if category_id > 0:
         selection = Question.query.filter(Question.question.ilike('%'+ body['searchTerm'] +'%'), Question.category == category_id).order_by(Question.id).all()
