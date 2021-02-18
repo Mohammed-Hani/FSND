@@ -148,14 +148,14 @@ def create_app(test_config=None):
     body = request.get_json()
     print(body)
     if 'searchTerm' in body:
-      category_id = body['currentCategory']
+      category_id = (lambda x: x if x != None else -1) (body.get('currentCategory'))
       page = body['page']
 
       if category_id > 0:
         selection = Question.query.filter(Question.question.ilike('%'+ body['searchTerm'] +'%'), Question.category == category_id).order_by(Question.id).all()
       else:
         selection = Question.query.filter(Question.question.ilike('%'+ body['searchTerm'] +'%')).order_by(Question.id).all()
-      #print('got selection')
+      
       current_questions = paginate_questions_search(page, selection)
     
       if len(current_questions) == 0:
