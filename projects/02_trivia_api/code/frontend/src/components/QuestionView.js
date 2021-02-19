@@ -132,17 +132,14 @@ class QuestionView extends Component {
     return (
       <div className="question-view">
         <div className="categories-list">
-          <h2 onClick={async () => {
-            await this.setState({currentCategory:null}); 
-            this.state.searchKeyword? this.submitSearch(this.state.searchKeyword) : this.getQuestions()
+          <h2 onClick={ () => {
+            this.setState({currentCategory:null}, () => {this.state.searchKeyword? this.submitSearch(this.state.searchKeyword) : this.getQuestions()}); 
             }}>Categories</h2>
           <ul>
             {Object.keys(this.state.categories).map((id, ) => (
-              <li key={id} onClick={ async () => {
-                if (this.state.searchKeyword){
-                  await this.setState({currentCategory:parseInt(id)});
-                  this.submitSearch(this.state.searchKeyword)
-                }
+              <li key={id} onClick={ () => {
+                if (this.state.searchKeyword)
+                  this.setState({currentCategory:parseInt(id)},() => {this.submitSearch(this.state.searchKeyword)});
                 else
                   this.getByCategory(id)}}>
                 {this.state.categories[id]}
