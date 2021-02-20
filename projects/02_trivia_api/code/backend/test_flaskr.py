@@ -80,6 +80,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Method not allowed')
     
+    def test_delete_question(self):
+        
+        res = self.client().delete('/questions/13')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['deleted'])
+        
+
+    def test_422_sent_deleting_non_existent_question(self):
+        
+        res = self.client().delete('/questions/1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Unprocessable')
+    
 
 
 
