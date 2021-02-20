@@ -83,14 +83,14 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         
         get_res = self.client().get('/questions')
-        question_to_delete = json.loads(get_res.data)['questions'][0]['id']
+        question_to_delete = str(json.loads(get_res.data)['questions'][0]['id'])
 
-        res = self.client().delete('/questions/'+str(question_to_delete))
+        res = self.client().delete('/questions/'+question_to_delete)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['deleted'])
+        self.assertEqual(data['deleted'], question_to_delete)
         
 
     def test_422_sent_deleting_non_existent_question(self):
