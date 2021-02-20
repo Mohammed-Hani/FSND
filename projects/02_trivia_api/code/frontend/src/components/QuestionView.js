@@ -78,8 +78,11 @@ class QuestionView extends Component {
   }
 
   clearSearchHandler = () => {
+    if (searchKeyword != '')
+    {
       this.setState({searchKeyword:''})
       this.getQuestions();
+    }
   } 
 
   submitSearch = (searchTerm) => {
