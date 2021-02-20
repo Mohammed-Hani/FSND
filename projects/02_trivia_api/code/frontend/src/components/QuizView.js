@@ -61,8 +61,6 @@ class QuizView extends Component {
       },
       crossDomain: true,
       success: (result) => {
-        console.log(result.question);
-        console.log(result.log?'false':'true');
         this.setState({
           showAnswer: false,
           previousQuestions: previousQuestions,
@@ -153,12 +151,6 @@ class QuizView extends Component {
 
   renderPlay(){
     
-    // console.log(this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd);
-    // console.log(this.state.previousQuestions.length );
-    // console.log(questionsPerPlay );
-    // console.log(this.state.previousQuestions.length === questionsPerPlay);
-    // console.log(this.state.forceEnd );
-
     return this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd
       ? this.renderFinalScore()
       : this.state.showAnswer 
