@@ -71,7 +71,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['created'])
         
-    def test_405_if_book_creation_not_allowed(self):
+    def test_405_if_question_creation_not_allowed(self):
         
         res = self.client().post('/questions/1000', json=self.new_question)
         data = json.loads(res.data)
@@ -101,6 +101,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Unprocessable')
+
+    def test_get_question_search_with_results(self):
+        res = self.client().post('/questions', json={'searchTerm': 'what'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['total_questions'])
+        self.assertEqual(data['current_category'], -1)
+        self.assertTrue(len(data['questions']))
+        
+
+    def test_get_question_search_without_results(self):
+        res = self.client().post('/questions', json={'searchTerm': 'qqqqqqqq'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['total_questions'], 0)
+        self.assertEqual(data['current_category'], -1)
+        self.assertEqual(len(data['questions']), 0)
+
+    def test_405_if_search_method_not_allowed(self):
+        
+        res = self.client().patch('/questions', json={'searchTerm': 'what'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Method not allowed')
     
 
     
