@@ -142,13 +142,37 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         
 
-    def test_404_sent_requesting_beyond_valid_page(self):
+    def test_405_sent_not_allowed_categories_method(self):
         res = self.client().post('/categories', json={'cat': 1})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Method Not Allowed')
+
+    def test_get_quiz_questions(self):
+        previous_questions = [20]
+        res = self.client().post('/quizzes', json={'previous_questions': previous_questions, 'quiz_category': {'type':'Science','id':'1'}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['previousQuestions'], previous_questions)
+        self.assertTrue(data['question'])
+        
+
+    def test_422_wrong_quiz_params_type(self):
+        
+        
+        res = self.client().post('/quizzes', json={'quiz_category': {'type':'Science','id':'Science'}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Unprocessable')
+        
+
+
     
 
     
