@@ -227,7 +227,7 @@ def create_app(test_config=None):
 
 
   '''
-  Create a POST endpoint to get questions to play the quiz. 
+  A POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
   if provided, and that is not one of the previous questions. 
@@ -239,13 +239,14 @@ def create_app(test_config=None):
   @app.route('/quizzes', methods=['POST'])
   def retrieve__quiz_questions_by_category_id():
     body = request.get_json()
-    print(body)
+    
     previous_questions = body.get('previous_questions')
     
-    category_id = (lambda x: int(x['id']) if int(x['id']) > 0 else -1) (body.get('quiz_category'))
+    
     
     try:
-      
+
+      category_id = (lambda x: x['id'] if int(x['id']) > 0 else -1) (body.get('quiz_category'))
       
       if previous_questions == None and category_id == -1:
         selection = Question.query.order_by(func.random()).first()
@@ -257,10 +258,10 @@ def create_app(test_config=None):
         selection = Question.query.filter(Question.category == category_id, ~Question.id.in_(previous_questions)).order_by(func.random()).first()
 
       return jsonify({
-            'success': True,
-            'previousQuestions': previous_questions,
-            'question': (lambda x: x.format() if x != None else None) (selection)
-            })
+          'success': True,
+          'previousQuestions': previous_questions,
+          'question': (lambda x: x.format() if x != None else None) (selection)
+          })
 
     except:
       abort(422)
@@ -300,6 +301,14 @@ def create_app(test_config=None):
         "error": 405,
         "message": "Method Not Allowed"
         }), 405
+
+  @app.errorhandler(500)
+  def method_not_allowed(error):
+    return jsonify({
+        "success": False, 
+        "error": 500,
+        "message": "Internal Server Error"
+        }), 500
   
   return app
 
