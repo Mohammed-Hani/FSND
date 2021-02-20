@@ -19,7 +19,7 @@ class TriviaTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
 
         self.new_question = {
-            'question': 'How many continent in the world?',
+            'question': 'How many continents are in the world?',
             'answer': '7',
             'difficulty': 2,
             'category': 3
