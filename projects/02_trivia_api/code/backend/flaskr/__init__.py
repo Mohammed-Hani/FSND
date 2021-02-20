@@ -156,7 +156,7 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def create_search_question():
     body = request.get_json()
-    print(body)
+    
     if 'searchTerm' in body:
       category_id = (lambda x: x if x != None else -1) (body.get('currentCategory'))
       page = body.get('page',1)
@@ -168,10 +168,8 @@ def create_app(test_config=None):
       
       current_questions = paginate_questions_search(page, selection)
     
-      if len(current_questions) == 0:
-        abort(404)
-      else:
-        return jsonify({
+      
+      return jsonify({
           'success':True,
           'questions': current_questions,
           'total_questions': len(selection),
