@@ -53,7 +53,7 @@ def create_app(test_config=None):
   @app.after_request
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
     return response
 
   ''' 
@@ -135,8 +135,7 @@ def create_app(test_config=None):
       abort(422)
 
   '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
+  An endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
 
@@ -144,6 +143,16 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  '''
+  A POST endpoint to get questions based on a search term. 
+  It should return any questions for whom the search term 
+  is a substring of the question. 
+
+  TEST: Search by any phrase. The questions list will update to include 
+  only question that include that string within their question. 
+  Try using the word "title" to start. 
+  '''
+
   @app.route('/questions', methods=['POST'])
   def create_search_question():
     body = request.get_json()
@@ -191,17 +200,7 @@ def create_app(test_config=None):
     except:
       abort(422)
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
-
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
-
+  
   ''' 
   A GET endpoint to get questions based on category. 
 
