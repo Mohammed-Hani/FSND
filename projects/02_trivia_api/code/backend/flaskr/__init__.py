@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+from sqlalchemy.sql import func
 
 from models import setup_db, Question, Category
 
@@ -239,6 +240,37 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def retrieve__quiz_questions_by_category_id():
+    body = request.get_json()
+    print(body)
+    previous_questions = body.get('previous_questions')
+    
+    category_id = (lambda x: int(x['id']) if int(x['id']) > 0 else -1) (body.get('quiz_category'))
+    
+    try:
+      
+      # if previous_questions != None:
+      #   #print('gettign ids')
+      #   previous_questions_id = [int(x['id']) for x in previous_questions]
+        #print(previous_questions_id)
+      if previous_questions == None and category_id == -1:
+        selection = Question.query.order_by(func.random()).first()
+      elif previous_questions != None and category_id == -1:
+        selection = Question.query.filter(~Question.id.in_(previous_questions)).order_by(func.random()).first()
+      elif previous_questions == None and category_id != -1:
+        selection = Question.query.filter(Question.category == category_id).order_by(func.random()).first()
+      else:
+        selection = Question.query.filter(Question.category == category_id, ~Question.id.in_(previous_questions)).order_by(func.random()).first()
+
+      return jsonify({
+            'success': True,
+            'previousQuestions': previous_questions,
+            'question': (lambda x: x.format() if x != None else None) (selection)
+            })
+
+    except:
+      abort(422)
 
   '''
   @TODO: 
