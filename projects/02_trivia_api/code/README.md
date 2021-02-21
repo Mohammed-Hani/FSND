@@ -75,6 +75,7 @@ The API will return three error types when requests fail:
 * 404: Resource Not Found
 * 422: Unprocessable
 * 405: Method Not Allowed
+* 500: Internal Server Error
 
 ### GET /questions
 
@@ -266,7 +267,9 @@ The API will return three error types when requests fail:
 
 ## Authors
 Mohammed Hany
+@Mohammed-Hani
 
 ## Acknowledgements
 
 Special Thanks is given to the Instructors & Reviewers of Udacity Full stack nanodegree program who help towards developing this project.
+@cmccarthy15 @amyhua 
