@@ -27,6 +27,18 @@ db_drop_and_create_all()
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks')
+@requires_auth('get:drinks-detail')
+def retrieve_drinks():
+    drinks = Drink.query.order_by(Drink.id).all()
+    drinks = [drink.short() for drink in drinks]
+    if len(drinks) == 0:
+      abort(404)
+    else:
+      return jsonify({
+        'success':True,
+        'drinks': drinks
+        })
 
 
 '''
