@@ -28,7 +28,6 @@ db_drop_and_create_all()
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks')
-@requires_auth('get:drinks-detail')
 def retrieve_drinks(jwt):
     drinks = Drink.query.order_by(Drink.id).all()
     drinks = [drink.short() for drink in drinks]
