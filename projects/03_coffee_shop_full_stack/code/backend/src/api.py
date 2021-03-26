@@ -63,6 +63,27 @@ def retrieve_drinks_detail(jwt):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def add_drinks(jwt):
+    body = request.get_json()
+
+    new_title = body.get('title', None)
+    new_recipe = json.dumps([body.get('recipe', None)])
+    
+    try:
+        drink = Drink(title=new_title, recipe=new_recipe)
+       
+        drink.insert()
+        drink = drink.long()
+        return jsonify({
+              'success': True,
+              'drinks': drink
+              })
+    except:
+       abort(422)
+
+
 
 
 '''
