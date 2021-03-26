@@ -29,7 +29,7 @@ db_drop_and_create_all()
 '''
 @app.route('/drinks')
 @requires_auth('get:drinks-detail')
-def retrieve_drinks():
+def retrieve_drinks(jwt):
     drinks = Drink.query.order_by(Drink.id).all()
     drinks = [drink.short() for drink in drinks]
     if len(drinks) == 0:
