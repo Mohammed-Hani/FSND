@@ -32,10 +32,7 @@ db_drop_and_create_all()
 def retrieve_drinks(jwt):
     drinks = Drink.query.order_by(Drink.id).all()
     drinks = [drink.short() for drink in drinks]
-    if len(drinks) == 0:
-      abort(404)
-    else:
-      return jsonify({
+    return jsonify({
         'success':True,
         'drinks': drinks
         })
