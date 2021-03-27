@@ -157,18 +157,6 @@ def unprocessable(error):
                     }), 422
 
 '''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
-
-'''
-
-
-'''
 error handler for 404
 '''
 @app.errorhandler(404)
