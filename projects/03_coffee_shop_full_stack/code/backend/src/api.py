@@ -74,7 +74,7 @@ def add_drinks(jwt):
         drink = Drink(title=new_title, recipe=new_recipe)
        
         drink.insert()
-        drink = drink.long()
+        drink = [drink.long()]
         return jsonify({
               'success': True,
               'drinks': drink
@@ -86,17 +86,35 @@ def add_drinks(jwt):
 
 
 '''
-@TODO implement endpoint
     PATCH /drinks/<id>
         where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
+        it responds with a 404 error if <id> is not found
+        it updates the corresponding row for <id>
+        it requires the 'patch:drinks' permission
+        it contains the drink.long() data representation
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def update_drinks(jwt, id):
+    
+    body = request.get_json()
+    drink = Drink.query.get(id)
+    if not drink:
+        abort(404)
+    
+    drink.title = body.get('title', None)
+    try:
+        drink.update()
+        drink = [drink.long()]
+        return jsonify({
+              'success': True,
+              'drinks': drink
+              })
+    except:
+         abort(422)
+    
 
 '''
 @TODO implement endpoint
@@ -140,8 +158,7 @@ def unprocessable(error):
 
 
 '''
-@TODO implement error handler for AuthError
-    error handler should conform to general task above 
+error handler for AuthError
 '''
 @app.errorhandler(AuthError)
 def auth_err(error :AuthError):
